@@ -151,13 +151,6 @@ def main():
 
         strMap.update(obj)
 
-    # print(len(strMap))
-    # print(strMap)
-
-    # print(strMap.get(3))
-
-    t = strMap.get(3)['gender']
-    # print(t)
     setContentType()
 
 
@@ -165,9 +158,12 @@ def setContentType():
     print("Length: " + str(len(strMap)))
 
     for key in strMap:
-        if strMap.get(key)['replayTo'] is None:
+        isReplayMsgExist = strMap.get(key)['replayTo'] in strMap
+        print(isReplayMsgExist)
+        if strMap.get(key)['replayTo'] is None or not isReplayMsgExist:
             strMap.get(key)['contentType'] = 'post'
             strMap.get(key)['esId'] = strMap.get(key)['first_name'] + '_' + str(strMap.get(key)['id'])
+            strMap.get(key)['replayTo'] = None
         else:
             strMap.get(key)['contentType'] = 'comment'
             strMap.get(key)['esId'] = strMap.get(key)['first_name'] + '_' + str(strMap.get(key)['id'])
@@ -176,13 +172,10 @@ def setContentType():
 
     for key in strMap:
         element = strMap.get(key)
-        isReplyMsgExist = element['replayTo'] in strMap
-        if element['contentType'] is 'comment' and isReplyMsgExist:
+
+        if element['contentType'] is 'comment':
             parentId = recursive(element['replayTo'])
             element['parentId'] = parentId
-        else:
-            print('nem létezik...')
-            print(element)
 
     res = json.dumps(strMap)
     print(res)
